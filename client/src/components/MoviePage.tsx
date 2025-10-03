@@ -15,16 +15,6 @@ import ReviewForm from "./ReviewForm";
     useEffect(() => {
         if (!id) return;
 
-        fetch(`/api/movies/${id}`)
-        .then(res => res.json())
-        .then(setMovie)
-        .catch(console.error);
-
-        fetch(`/api/movies/${id}/reviews`)
-        .then(res => res.json())
-        .then(setReviews)
-        .catch(console.error);
-
         async function loadData() {
             try {
                 setLoading(true);
@@ -34,7 +24,7 @@ import ReviewForm from "./ReviewForm";
                 if(!movieRes.ok) throw new Error("Movie fetch failed");
                 const movieData = await movieRes.json();
 
-                const reviewRes = await fetch(`/api/movie/${id}/reviews`);
+                const reviewRes = await fetch(`/api/movies/${id}/reviews`);
                 if (!reviewRes.ok) throw new Error("Reviews fetch failed");
                 const reviewsData = await reviewRes.json();
 
@@ -49,7 +39,9 @@ import ReviewForm from "./ReviewForm";
         loadData();
     }, [id]);
 
-    if (!movie) return <p>Loading movie...</p>
+    if (loading) return <p>Loading movie...</p>
+    if (error) return <p>Error: {error}</p>
+    if (!movie) return <p>No movie found</p>
 
     return (
         <div>
@@ -60,7 +52,7 @@ import ReviewForm from "./ReviewForm";
             <ul>
                 {reviews.map((review) => (
                     <li key={review.id}>
-                        <b>{review.author}</b>: {review.text} [{review.createdAt.toLocaleString().split("T")[0]}]
+                        <b>{review.author}</b>: {review.text} [{new Date(review.createdAt).toLocaleDateString()}]
                     </li>
                 ))}
             </ul>
