@@ -1,31 +1,18 @@
-import { useEffect, useState } from "react";
-import type { Movie } from "../types";
+import { Link } from "react-router-dom";
+import { useMovies } from "../hooks/useMovies";
 
 export default function MovieList() {
-    const [movies, setMovies] = useState<Movie[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        async function fetchMovies() {
-            try {
-                const res = await fetch("/api/movies");
-                const data: Movie[] = await res.json();
-                setMovies(data);
-            } catch (err) {
-                console.log("Failed to fetch movies", err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchMovies();
-    }, []);
-
+    const {movies, loading, error} = useMovies();
     if (loading) return <p>Loading...</p>
+    if (error) return <p>Could not load movies</p>
     return (
         <ul>
             {movies.map((m) => (
                 <li key={m.id}>
+                    <Link to={`/movies/${m.id}`}>
                     <strong>{m.title}</strong> ({m.year}) - {m.genre}
+                    </Link>
+                    
                 </li>
             ))}
         </ul>
