@@ -1,7 +1,10 @@
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan");
+const {v4: uuid4} = require("uuid");
 const app = express();
 
+app.use(morgan("dev")); // for logging incoming requests
 app.use(express.json());
 app.use(cors({origin: "http://localhost:5173"}));
 
@@ -49,7 +52,7 @@ app.post("/api/movies/:id/reviews", (req,res) => {
     if(!movie) return res.status(404).json({error: "movie not found"});
 
     const newReview = {
-        id: "r" + Date.now(),
+        id: uuid4(),
         movieId: id,
         author,
         text,
